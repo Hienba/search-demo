@@ -3,42 +3,52 @@ import { useSearchParams } from "react-router-dom";
 import "../styles.css";
 import CardList from "./CardList";
 function Search() {
-  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const Search = async (e) => {
-    e.preventDefault();
-    const url = `https://cloud-search-api.herokuapp.com/api/search?q=${query}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      setResults(data.data);
-    } catch (err) {
-      console.error(err);
-    }
+  const url = `https://cloud-search-api.herokuapp.com/api/search?q=${encodeURIComponent(
+    search
+  )}`;
+  const handleChange = (e) => {
+    setSearch(e.target.value);
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setResults(data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setLoading(false);
+      });
+  };
+
   return (
     <>
-      <form className="form" onSubmit={Search}>
-        <label className="label">Movie Name</label>
+      <form className="form">
+        <label className="label">Movie Search App</label>
         <input
           className="input"
           type="text"
-          placeholder="Enter movie name"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={search}
+          onChange={handleChange}
         />
-        <button
-          className="button"
-          type="submit"
-          onClick={() => setSearchParams({ q: `${query}` })}
-        >
+        <button className="button" type="submit" onClick={handleSubmit}>
           Search
         </button>
+        {loading ? <p>Loading...</p> : null}
+        {error ? <p>Error: {error.message}</p> : null}
       </form>
       <div className="card--list">
         {results.map((result) => (
-          <CardList result={result} />
+          <CardList key={result.id} result={result} />
         ))}
       </div>
     </>

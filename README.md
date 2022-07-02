@@ -1,2 +1,3 @@
-# search-demo
-Created with CodeSandbox
+# Search App
+
+Build a simple Search App
