@@ -1,0 +1,19 @@
+html {
+  font-size: 10px;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+p {
+  font-size: 1.6rem;
+}
+small {
+  font-size: 1.2rem;
+}
+.container {
+  margin: 0 auto;
+  max-width: 1000px;
+  padding: 40px;
+}
