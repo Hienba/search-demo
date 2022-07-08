@@ -8,6 +8,25 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchTerm = searchParams.get("q");
+
+  if (searchTerm) {
+    fetch(
+      `https://cloud-search-api.herokuapp.com/api/search?q=${searchTerm}`
+    ).then((res) =>
+      res
+        .json()
+        .then((data) => {
+          setResults(data.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError(error);
+          setLoading(false);
+        })
+    );
+  }
+
   const url = `https://cloud-search-api.herokuapp.com/api/search?q=${encodeURIComponent(
     search
   )}`;
@@ -32,7 +51,7 @@ function Search() {
 
   return (
     <>
-      <form className="form">
+      <form className="form" onSubmit={handleSubmit}>
         <label className="label">Movie Search App</label>
         <input
           className="input"
@@ -40,13 +59,20 @@ function Search() {
           value={search}
           onChange={handleChange}
         />
-        <button className="button" type="submit" onClick={handleSubmit}>
+        <button
+          className="button"
+          type="submit"
+          onClick={() => setSearchParams({ q: `${search}` })}
+        >
           Search
         </button>
+        {/*can not click to typing in input after search */}
+
         {loading ? <p>Loading...</p> : null}
         {error ? <p>Error: {error.message}</p> : null}
       </form>
       <div className="card--list">
+        <small className="search">Searching for: {searchTerm}</small>
         {results.map((result) => (
           <CardList key={result.id} result={result} />
         ))}
