@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../styles.css";
 import CardList from "./CardList";
@@ -10,24 +10,19 @@ function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
 
-  if (searchTerm) {
-    fetch(
-      `https://cloud-search-api.herokuapp.com/api/search?q=${searchTerm}`
-    ).then((res) =>
-      res
-        .json()
+  useEffect(() => {
+    if (searchTerm) {
+      fetch(
+        `https://cloud-search-api.herokuapp.com/api/products?search=${searchTerm}`
+      )
+        .then((res) => res.json())
         .then((data) => {
           setResults(data.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setError(error);
-          setLoading(false);
-        })
-    );
-  }
+        });
+    }
+  }, [searchTerm]);
 
-  const url = `https://cloud-search-api.herokuapp.com/api/search?q=${encodeURIComponent(
+  const url = `https://cloud-search-api.herokuapp.com/api/products?search=${encodeURIComponent(
     search
   )}`;
   const handleChange = (e) => {
@@ -74,7 +69,7 @@ function Search() {
       <div className="card--list">
         <small className="search">Searching for: {searchTerm}</small>
         {results.map((result) => (
-          <CardList key={result.id} result={result} />
+          <CardList key={result._id} result={result} />
         ))}
       </div>
     </>
